@@ -237,7 +237,7 @@ function ENT:DrawUseHint() -- twolemons cfc spawnpoint pr
     ang:RotateAroundAxis( ang:Forward(), 90 )
 
     cam.Start3D2D( pos, ang, 0.15 )
-        draw.SimpleText( "Press E", "CloseCaption_BoldItalic", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+        draw.SimpleText( "Press E (90+ MB)", "CloseCaption_BoldItalic", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
     cam.End3D2D()
 end
 
