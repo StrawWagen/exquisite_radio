@@ -138,11 +138,19 @@ function easyClosePanel( pnl, callFirst )
     end
 end
 
-local gotSongs = false
+local gotSongs
+local knowsDisabled 
 local attempts = 0
 local function doContent()
+    local volume = volumeVar:GetFloat()
+    if volume <= 0 then
+        LocalPlayer():ChatPrint( "You've disabled the Exquisite Radio\n'exquisite_radio_cl_volume 1' to enable" )
+        knowsDisabled = true
+        return
+
+    end
+
     if gotSongs then return end
-    if attempts >= 2 then return end
 
     local exists = file.Exists( "sound/exquisite/exquisite1.mp3", "GAME" )
     if exists then
@@ -152,6 +160,7 @@ local function doContent()
 
     end
 
+    if attempts >= 2 then return end
     attemtps = attempts + 1
     print( "Exquisite Radio: Mounting songs..." )
 
@@ -188,6 +197,7 @@ function ENT:Draw()
     self:DrawModel()
 
     if gotSongs then return end
+    if knowsDisabled then return end
     self:DrawUseHint()
 
 end
