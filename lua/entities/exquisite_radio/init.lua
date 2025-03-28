@@ -3,7 +3,11 @@ AddCSLuaFile( "shared.lua" )
 
 include( "shared.lua" )
 
-resource.AddWorkshop( "3453321951" ) -- songs + spawnicon
+local dynContentVar = CreateConVar( "exquisite_radio_dynamiccontent", 0, { FCVAR_ARCHIVE, FCVAR_REPLICATED }, "Only deliver the Exquisite Radio songs when people press E on a radio?", 0, 1 )
+if not dynContentVar:GetBool() then
+    resource.AddWorkshop( "3453321951" ) -- songs + spawnicon
+
+end
 
 ENT.Songs = {
     [0] = "ambient/_period.wav",

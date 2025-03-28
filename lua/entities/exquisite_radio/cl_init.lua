@@ -23,10 +23,6 @@ local SongNames = {
 
 }
 
-local nextRecieve = 0
-local shopItemColor = Color( 73, 73, 73, 255 )
-local Tuner
-
 local uiScaleVert = ScrH() / 1080
 local uiScaleHoris = ScrW() / 1920
 
@@ -140,9 +136,53 @@ function easyClosePanel( pnl, callFirst )
     end
 end
 
+local gotSongs = false
+local attempts = 0
+local dynContentVar = GetConVar( "exquisite_radio_dynamiccontent" )
+local function doContent()
+    if not dynContentVar:GetBool() then gotSongs = true return end
+    if gotSongs then return end
+    if attempts >= 2 then return end
+
+    local exists = file.Exists( "sound/exquisite/exquisite1.mp3", "GAME" )
+    if exists then
+        gotSongs = true
+        print( "Exquisite Radio: Songs already mounted." )
+        return
+
+    end
+
+    attemtps = attempts + 1
+    print( "Exquisite Radio: Mounting songs..." )
+
+    steamworks.DownloadUGC( "1743176373", function( path )
+        if not path then return end
+        gotSongs = game.MountGMA( path )
+        if gotSongs then
+            print( "Exquisite Radio: Songs... mounted!" )
+
+        else
+            print( "Exquisite Radio: Mounting FAILURE!" )
+
+        end
+    end )
+end
+
+function ENT:Initialize()
+    local exists = file.Exists( "sound/exquisite/exquisite1.mp3", "GAME" )
+    if not exists then return end
+    gotSongs = true
+
+end
+
+local nextRecieve = 0
+local shopItemColor = Color( 73, 73, 73, 255 )
+local Tuner
 
 net.Receive( "OpenExquisiteRadioMenu", function()
     if nextRecieve > CurTime() then return end
+
+    doContent()
     nextRecieve = CurTime() + 0.01
 
     local selfEnt = Entity( net.ReadUInt( 16 ) )
@@ -186,3 +226,27 @@ net.Receive( "OpenExquisiteRadioMenu", function()
         net.SendToServer()
     end
 end )
+
+local upOff = Vector( 0, 0, 25 )
+local color_white = Color( 255, 255, 255 )
+
+function ENT:DrawUseHint() -- twolemons cfc spawnpoint pr
+    local pos = self:GetPos() + upOff
+    local ang = ( pos - EyePos() ):Angle()
+
+    ang[1] = 0
+    ang:RotateAroundAxis( ang:Up(), -90 )
+    ang:RotateAroundAxis( ang:Forward(), 90 )
+
+    cam.Start3D2D( pos, ang, 0.15 )
+        draw.SimpleText( "Press E", "CloseCaption_BoldItalic", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+    cam.End3D2D()
+end
+
+function ENT:Draw()
+    self:DrawModel()
+
+    if gotSongs then return end
+    self:DrawUseHint()
+
+end
