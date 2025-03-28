@@ -139,7 +139,7 @@ function easyClosePanel( pnl, callFirst )
 end
 
 local gotSongs
-local knowsDisabled 
+local knowsDisabled
 local attempts = 0
 local function doContent()
     local volume = volumeVar:GetFloat()
@@ -270,6 +270,9 @@ net.Receive( "ExquisiteRadioPlaySong", function()
     local lvl = net.ReadInt( 8 )
     local pitch = net.ReadInt( 8 )
     local dsp = net.ReadInt( 8 )
+
+    local lvlMul = 0.75 + ( volume * 0.25 ) -- decrease the lvl, but not to 0
+    lvl = lvl * lvlMul
 
     radio:EmitSound( radio.Songs[ songInd ], lvl, pitch, volume, CHAN_ITEM, SND_NOFLAGS, dsp )
 

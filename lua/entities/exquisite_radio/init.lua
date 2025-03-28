@@ -148,7 +148,6 @@ function ENT:TakeDamageRandomizeSong( damaged )
         timer.Simple( math.Rand( 0.5, 1 ), function()
             if not IsValid( self ) then return end
             self:TakeDamageRandomizeSong()
-            print( "a" )
 
         end )
     end
