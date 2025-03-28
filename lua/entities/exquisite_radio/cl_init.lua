@@ -138,9 +138,7 @@ end
 
 local gotSongs = false
 local attempts = 0
-local dynContentVar = GetConVar( "exquisite_radio_dynamiccontent" )
 local function doContent()
-    if not dynContentVar:GetBool() then gotSongs = true return end
     if gotSongs then return end
     if attempts >= 2 then return end
 
