@@ -281,6 +281,6 @@ end )
 function ENT:OnRemove( fullUpdate ) -- stop song when removed
     if fullUpdate then return end
 
-    self:EmitSound( ENT.Songs[0], 100, 100, 1, CHAN_ITEM )
+    self:EmitSound( self.Songs[0], 100, 100, 1, CHAN_ITEM )
 
 end
