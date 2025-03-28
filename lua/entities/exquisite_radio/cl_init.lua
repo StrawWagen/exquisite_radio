@@ -45,8 +45,8 @@ local input_IsMouseDown = input.IsMouseDown
 local justTabbedIn = false
 
 local function ShutDownPanel( pnl )
-    if pnl.glee_easyCloseFirst then
-        pnl.glee_easyCloseFirst()
+    if pnl.exquisite_easyCloseFirst then
+        pnl.exquisite_easyCloseFirst()
 
     end
     if not IsValid( pnl ) then return end
@@ -69,14 +69,14 @@ function easyClosePanel( pnl, callFirst )
         pnl.keyWasDown[clientsUseKey] = true
     end
 
-    pnl.gleeOld_Think = pnl.Think
+    pnl.exquisiteOld_Think = pnl.Think
 
-    pnl.glee_easyCloseFirst = callFirst
+    pnl.exquisite_easyCloseFirst = callFirst
 
     function pnl:Think()
         if not system.HasFocus() then
             justTabbedIn = true
-            self:gleeOld_Think()
+            self:exquisiteOld_Think()
             return
 
         end
@@ -115,7 +115,7 @@ function easyClosePanel( pnl, callFirst )
         end
 
         if not input_IsMouseDown( MOUSE_LEFT ) and not input_IsMouseDown( MOUSE_RIGHT ) then
-            self:gleeOld_Think()
+            self:exquisiteOld_Think()
             justTabbedIn = nil
             return
 
@@ -131,7 +131,7 @@ function easyClosePanel( pnl, callFirst )
         if mouseX < myX or mouseX > myX + myWidth then ShutDownPanel( self ) return end
         if mouseY < myY or mouseY > myY + myHeight then ShutDownPanel( self ) return end
 
-        self:gleeOld_Think()
+        self:exquisiteOld_Think()
 
     end
 end
@@ -166,7 +166,7 @@ local function doContent()
     end )
 end
 
-function ENT:Initialize()
+function ENT:Initialize() -- dont display the hint if they are already subscribed on ws
     local exists = file.Exists( "sound/exquisite/exquisite1.mp3", "GAME" )
     if not exists then return end
     gotSongs = true
