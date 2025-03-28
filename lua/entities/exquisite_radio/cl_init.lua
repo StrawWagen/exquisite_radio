@@ -1,5 +1,7 @@
 include( "shared.lua" )
 
+local volumeVar = CreateClientConVar( "exquisite_radio_cl_volume", 1, true, false, "Exquisite Radio volume, 0 to disable radio", 0, 1 )
+
 function ENT:Draw()
     self:DrawModel()
 end
@@ -166,6 +168,30 @@ local function doContent()
     end )
 end
 
+local upOff = Vector( 0, 0, 25 )
+local color_white = Color( 255, 255, 255 )
+
+function ENT:DrawUseHint() -- twolemons cfc spawnpoint pr
+    local pos = self:GetPos() + upOff
+    local ang = ( pos - EyePos() ):Angle()
+
+    ang[1] = 0
+    ang:RotateAroundAxis( ang:Up(), -90 )
+    ang:RotateAroundAxis( ang:Forward(), 90 )
+
+    cam.Start3D2D( pos, ang, 0.15 )
+        draw.SimpleText( "Press E (90+ MB)", "CloseCaption_BoldItalic", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+    cam.End3D2D()
+end
+
+function ENT:Draw()
+    self:DrawModel()
+
+    if gotSongs then return end
+    self:DrawUseHint()
+
+end
+
 function ENT:Initialize() -- dont display the hint if they are already subscribed on ws
     local exists = file.Exists( "sound/exquisite/exquisite1.mp3", "GAME" )
     if not exists then return end
@@ -225,26 +251,16 @@ net.Receive( "OpenExquisiteRadioMenu", function()
     end
 end )
 
-local upOff = Vector( 0, 0, 25 )
-local color_white = Color( 255, 255, 255 )
+net.Receive( "ExquisiteRadioPlaySong", function()
+    local volume = volumeVar:GetFloat()
+    if volume <= 0 then return end
 
-function ENT:DrawUseHint() -- twolemons cfc spawnpoint pr
-    local pos = self:GetPos() + upOff
-    local ang = ( pos - EyePos() ):Angle()
+    local radio = net.ReadEntity()
+    local songInd = net.ReadInt( 10 )
+    local lvl = net.ReadInt( 8 )
+    local pitch = net.ReadInt( 8 )
+    local dsp = net.ReadInt( 8 )
 
-    ang[1] = 0
-    ang:RotateAroundAxis( ang:Up(), -90 )
-    ang:RotateAroundAxis( ang:Forward(), 90 )
+    radio:EmitSound( radio.Songs[ songInd ], lvl, pitch, volume, CHAN_ITEM, SND_NOFLAGS, dsp )
 
-    cam.Start3D2D( pos, ang, 0.15 )
-        draw.SimpleText( "Press E (90+ MB)", "CloseCaption_BoldItalic", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-    cam.End3D2D()
-end
-
-function ENT:Draw()
-    self:DrawModel()
-
-    if gotSongs then return end
-    self:DrawUseHint()
-
-end
+end )

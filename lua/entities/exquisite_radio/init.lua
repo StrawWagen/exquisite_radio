@@ -3,29 +3,11 @@ AddCSLuaFile( "shared.lua" )
 
 include( "shared.lua" )
 
-ENT.Songs = {
-    [0] = "ambient/_period.wav",
-    [1] = "exquisite/exquisite1.mp3", -- Clair de lune - Claude Debussy
-    [2] = "exquisite/exquisite2.mp3", -- Unaccompanied Cello Suite No. 1 in G major, BWV 1007: I. Prélude
-    [3] = "exquisite/exquisite3.mp3", -- Chopin_Nocturne_op.9_No.2
-    [4] = "exquisite/exquisite4.mp3", -- Moonlight Sonata
-    [5] = "exquisite/exquisite5.mp3", -- Symphony No. 5 - Beethoven
-    [6] = "exquisite/exquisite6.mp3", -- Funeral March (by Chopin) - Chopin
-    [7] = "exquisite/exquisite7.mp3", -- Morning Mood (by Grieg) - Grieg
-    [8] = "exquisite/exquisite8.mp3", -- In The Hall Of The Mountain King (by Grieg) - Grieg
-    [9] = "exquisite/exquisite9.mp3", -- Pachabelly - Huma-Huma
-    [10] = "exquisite/exquisite10.mp3", -- Ride of the Valkyries - Wagner
-    [11] = "exquisite/exquisite11.mp3", -- From Russia With Love - Huma-Huma
-    [12] = "exquisite/exquisite12.mp3", -- Messiah - Handel
-    [13] = "exquisite/exquisite13.mp3", -- Midsummer Night's Dream - Mendelssohn
-    [14] = "exquisite/exquisite14.mp3", -- Serenade D957 No.4 - Schubert
-
-}
-
 -- YOU NEED TO EXPORT SONGS WITH CONSTANT BITRATE!!!!!!
 
 util.AddNetworkString( "OpenExquisiteRadioMenu" )
 util.AddNetworkString( "PlayExquisiteRadio" )
+util.AddNetworkString( "ExquisiteRadioPlaySong" )
 
 function ENT:Initialize()
     self:SetModel( "models/props_lab/citizenradio.mdl" )
@@ -99,46 +81,7 @@ function ENT:Think()
 
 end
 
-local nextRecieve = 0
-
-net.Receive( "PlayExquisiteRadio", function()
-    if nextRecieve > CurTime() then return end
-    nextRecieve = CurTime() + 0.005
-
-    local selfEnt = net.ReadEntity()
-    local songIndex = net.ReadUInt( 16 )
-
-    if not IsValid( selfEnt ) then nextRecieve = CurTime() + 0.1 return end
-
-    selfEnt.spammingHints = true
-
-    local lvl = 83
-    if selfEnt.RadioBroken then
-        lvl = 80
-
-    end
-
-    local filterAllPlayers = RecipientFilter()
-    filterAllPlayers:AddAllPlayers()
-
-    selfEnt:EmitSound( selfEnt.Songs[math.Round( songIndex )], lvl, selfEnt.audioPitch, 1, CHAN_ITEM, nil, selfEnt.audioDSP, filterAllPlayers )
-    selfEnt.ActiveSong = math.Round( songIndex )
-
-    selfEnt:DoNextSong()
-
-end )
-
-function ENT:OnRemove()
-    local filterAllPlayers = RecipientFilter()
-    filterAllPlayers:AddAllPlayers()
-
-    self:EmitSound( "ambient/_period.wav", 75, 100, 1, CHAN_ITEM, nil, self.audioDSP, filterAllPlayers )
-
-end
-
-function ENT:TakeDamageRandomizeSong( damaged )
-    local rand = math.random( 1, table.Count( self.Songs ) - 1 )
-
+function ENT:RestartOurSong()
     local lvl = 83
     if self.RadioBroken then
         lvl = 80
@@ -148,8 +91,48 @@ function ENT:TakeDamageRandomizeSong( damaged )
     local filterAllPlayers = RecipientFilter()
     filterAllPlayers:AddAllPlayers()
 
-    self:EmitSound( self.Songs[rand], lvl, self.audioPitch, 1, CHAN_ITEM, nil, self.audioDSP, filterAllPlayers )
+    net.Start( "ExquisiteRadioPlaySong" )
+        net.WriteEntity( self )
+        net.WriteInt( self.ActiveSong, 10 )
+        net.WriteInt( lvl, 8 )
+        net.WriteInt( self.audioPitch, 8 )
+        net.WriteInt( self.audioDSP, 8 )
+    net.Send( filterAllPlayers )
+
+end
+
+local nextRecieve = 0
+
+net.Receive( "PlayExquisiteRadio", function()
+    if nextRecieve > CurTime() then return end
+    nextRecieve = CurTime() + 0.005
+
+    local selfEnt = net.ReadEntity()
+    local songIndex = net.ReadUInt( 16 )
+    songIndex = math.Round( songIndex )
+
+    if not IsValid( selfEnt ) then nextRecieve = CurTime() + 0.1 return end
+
+    selfEnt.ActiveSong = math.Round( songIndex )
+    selfEnt:RestartOurSong()
+    selfEnt:DoNextSong()
+
+end )
+
+function ENT:OnRemove()
+    local filterAllPlayers = RecipientFilter()
+    filterAllPlayers:AddAllPlayers()
+
+    self.ActiveSong = 0
+    self:RestartOurSong()
+
+end
+
+function ENT:TakeDamageRandomizeSong( damaged )
+    local rand = math.random( 1, table.Count( self.Songs ) - 1 )
+
     self.ActiveSong = rand
+    self:RestartOurSong()
 
     self:DoNextSong()
 
