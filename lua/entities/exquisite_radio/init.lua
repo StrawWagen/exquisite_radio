@@ -119,15 +119,6 @@ net.Receive( "PlayExquisiteRadio", function()
 
 end )
 
-function ENT:OnRemove()
-    local filterAllPlayers = RecipientFilter()
-    filterAllPlayers:AddAllPlayers()
-
-    self.ActiveSong = 0
-    self:RestartOurSong()
-
-end
-
 function ENT:TakeDamageRandomizeSong( damaged )
     local rand = math.random( 1, table.Count( self.Songs ) - 1 )
 
