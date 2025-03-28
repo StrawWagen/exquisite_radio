@@ -6,7 +6,7 @@ end
 
 local SongNames = {
     [0] = "Off",
-    [1] = "EXQUISITE1",
+    [1] = "Clair de lune - Claude Debussy",
     [2] = "Unaccompanied Cello Suite No. 1 in G major, BWV 1007: I. Prélude",
     [3] = "Chopin_Nocturne_op.9_No.2",
     [4] = "Moonlight Sonata - Beethoven",

@@ -7,7 +7,7 @@ resource.AddWorkshop( "3453321951" ) -- songs + spawnicon
 
 ENT.Songs = {
     [0] = "ambient/_period.wav",
-    [1] = "exquisite/exquisite1.mp3", -- idk
+    [1] = "exquisite/exquisite1.mp3", -- Clair de lune - Claude Debussy
     [2] = "exquisite/exquisite2.mp3", -- Unaccompanied Cello Suite No. 1 in G major, BWV 1007: I. Prélude
     [3] = "exquisite/exquisite3.mp3", -- Chopin_Nocturne_op.9_No.2
     [4] = "exquisite/exquisite4.mp3", -- Moonlight Sonata
