@@ -266,6 +266,8 @@ net.Receive( "ExquisiteRadioPlaySong", function()
     if volume <= 0 then return end
 
     local radio = net.ReadEntity()
+    if not IsValid( radio ) then return end
+
     local songInd = net.ReadInt( 10 )
     local lvl = net.ReadInt( 8 )
     local pitch = net.ReadInt( 8 )
