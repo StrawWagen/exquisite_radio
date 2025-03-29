@@ -1,5 +1,7 @@
 include( "shared.lua" )
 
+local CurTime = CurTime
+
 local volumeVar = CreateClientConVar( "exquisite_radio_cl_volume", 1, true, false, "Exquisite Radio volume, 0 to disable radio", 0, 1 )
 
 function ENT:Draw()
@@ -142,16 +144,20 @@ local busy
 local gotSongs
 local knowsDisabled
 local attempts = 0
-local function doContent()
+local maxAttempts = 2
+local function doContent() -- return true to block GUI creation
     local volume = volumeVar:GetFloat()
     if volume <= 0 then
         LocalPlayer():ChatPrint( "You've disabled the Exquisite Radio\n'exquisite_radio_cl_volume 1' to enable" )
         knowsDisabled = true
-        return
+        return true
+
+    elseif knowsDisabled then
+        knowsDisabled = nil
 
     end
 
-    if gotSongs then return end
+    if gotSongs then return end -- 👍
 
     local exists = file.Exists( "sound/exquisite/exquisite1.mp3", "GAME" )
     if exists then
@@ -161,8 +167,8 @@ local function doContent()
 
     end
 
-    if attempts >= 2 then return end
-    if busy then return end
+    if attempts >= maxAttempts then return true end
+    if busy then return true end
     attemtps = attempts + 1
     print( "Exquisite Radio: Mounting songs..." )
 
@@ -179,20 +185,27 @@ local function doContent()
 
         end
     end )
+
+    return true
 end
 
 local upOff = Vector( 0, 0, 25 )
 local color_white = Color( 255, 255, 255 )
 
-function ENT:DrawTextAboveMe( text ) -- twolemons cfc spawnpoint pr
-    local pos = self:GetPos() + upOff
+local dontDrawText = 0
+local textDrawCutoff = 1000^2
+
+function ENT:DrawTextAboveMe( text, scaleMul ) -- twolemons cfc spawnpoint pr
+    local myPos = self:GetPos()
+    if EyePos():DistToSqr( myPos ) > textDrawCutoff then dontDrawText = CurTime() + 1 return end
+    local pos = myPos + upOff
     local ang = ( pos - EyePos() ):Angle()
 
     ang[1] = 0
     ang:RotateAroundAxis( ang:Up(), -90 )
     ang:RotateAroundAxis( ang:Forward(), 90 )
 
-    cam.Start3D2D( pos, ang, 0.15 )
+    cam.Start3D2D( pos, ang, 0.15 * scaleMul )
         draw.SimpleText( text, "CloseCaption_BoldItalic", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
     cam.End3D2D()
 end
@@ -200,15 +213,16 @@ end
 function ENT:Draw()
     self:DrawModel()
 
+    if dontDrawText > CurTime() then return end
     if knowsDisabled then return end
     if gotSongs then
-        local songInd = self.exquisite_CurrentSongInd
+        local songInd = self.exquisite_CurrentSongInd or 0
         if songInd <= 0 then return end
-        self:DrawTextAboveMe( SongNames[songInd] )
+        self:DrawTextAboveMe( SongNames[songInd], 0.5 )
         return
 
     end
-    self:DrawTextAboveMe( "Press E (45+ MB)" )
+    self:DrawTextAboveMe( "Press E (45+ MB)", 1 )
 
 end
 
@@ -219,6 +233,7 @@ function ENT:Initialize() -- dont display the hint if they are already subscribe
 
 end
 
+local yapped = 0
 local nextRecieve = 0
 local shopItemColor = Color( 73, 73, 73, 255 )
 local Tuner
@@ -226,8 +241,22 @@ local Tuner
 net.Receive( "OpenExquisiteRadioMenu", function()
     if nextRecieve > CurTime() then return end
 
-    doContent()
     nextRecieve = CurTime() + 0.01
+    local wait = doContent()
+    if wait then
+        if attempts >= maxAttempts and not busy then -- they couldnt download it
+            if yapped ~= 1 then
+                yapped = 1
+                ply:ChatPrint( "Could not download Exquisite Radio songs, try subscribing to this?\nhttps://steamcommunity.com/sharedfiles/filedetails/?id=3453321951" )
+
+            end
+        elseif busy then -- downloading...
+            ply:ChatPrint( "Please wait while the Exquisite Radio songs download." )
+
+        end
+        return
+
+    end
 
     local selfEnt = Entity( net.ReadUInt( 16 ) )
     local activeSong = net.ReadUInt( 16 )
