@@ -301,6 +301,8 @@ net.Receive( "OpenExquisiteRadioMenu", function()
 end )
 
 net.Receive( "ExquisiteRadioPlaySong", function()
+    if not gotSongs then return end
+
     local volume = volumeVar:GetFloat()
     if volume <= 0 then return end
 
