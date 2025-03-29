@@ -138,6 +138,7 @@ function easyClosePanel( pnl, callFirst )
     end
 end
 
+local busy
 local gotSongs
 local knowsDisabled
 local attempts = 0
@@ -161,10 +162,13 @@ local function doContent()
     end
 
     if attempts >= 2 then return end
+    if busy then return end
     attemtps = attempts + 1
     print( "Exquisite Radio: Mounting songs..." )
 
+    busy = true
     steamworks.DownloadUGC( "3453321951", function( path )
+        busy = false
         if not path then return end
         gotSongs = game.MountGMA( path )
         if gotSongs then
@@ -180,7 +184,7 @@ end
 local upOff = Vector( 0, 0, 25 )
 local color_white = Color( 255, 255, 255 )
 
-function ENT:DrawUseHint() -- twolemons cfc spawnpoint pr
+function ENT:DrawTextAboveMe( text ) -- twolemons cfc spawnpoint pr
     local pos = self:GetPos() + upOff
     local ang = ( pos - EyePos() ):Angle()
 
@@ -189,16 +193,22 @@ function ENT:DrawUseHint() -- twolemons cfc spawnpoint pr
     ang:RotateAroundAxis( ang:Forward(), 90 )
 
     cam.Start3D2D( pos, ang, 0.15 )
-        draw.SimpleText( "Press E (45+ MB)", "CloseCaption_BoldItalic", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+        draw.SimpleText( text, "CloseCaption_BoldItalic", 0, 0, color_white, TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
     cam.End3D2D()
 end
 
 function ENT:Draw()
     self:DrawModel()
 
-    if gotSongs then return end
     if knowsDisabled then return end
-    self:DrawUseHint()
+    if gotSongs then
+        local songInd = self.exquisite_CurrentSongInd
+        if songInd <= 0 then return end
+        self:DrawTextAboveMe( SongNames[songInd] )
+        return
+
+    end
+    self:DrawTextAboveMe( "Press E (45+ MB)" )
 
 end
 
@@ -276,7 +286,8 @@ net.Receive( "ExquisiteRadioPlaySong", function()
     local lvlMul = 0.75 + ( volume * 0.25 ) -- decrease the lvl, but not to 0
     lvl = lvl * lvlMul
 
-    radio:EmitSound( radio.Songs[ songInd ], lvl, pitch, volume, CHAN_ITEM, SND_NOFLAGS, dsp )
+    radio:EmitSound( radio.Songs[songInd], lvl, pitch, volume, CHAN_ITEM, SND_NOFLAGS, dsp )
+    radio.exquisite_CurrentSongInd = songInd
 
 end )
 
