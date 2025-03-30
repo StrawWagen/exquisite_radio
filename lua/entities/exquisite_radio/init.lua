@@ -38,13 +38,22 @@ end
 
 function ENT:Use( _, caller )
     if not caller:IsPlayer() then return end
+    if caller:KeyDown( IN_WALK ) then return end -- sit anywhere
 
     self.nextResetGuiCreated = CurTime() + 0.15
     if self.createdGUI then return end
 
     self.createdGUI = true
 
+    local justAskForContent
+    if self:GetCreatorOnly() then
+        local creator = self:GetCreator()
+        justAskForContent = IsValid( creator ) and caller ~= creator
+
+    end
+
     net.Start( "OpenExquisiteRadioMenu" )
+        net.WriteBool( justAskForContent )
         net.WriteUInt( self:EntIndex(), 16 )
         net.WriteUInt( self.ActiveSong, 16 )
 
@@ -60,10 +69,13 @@ function ENT:Think()
             radius = 200
 
         end
-        sound.EmitHint( SOUND_COMBAT, self:GetPos(), radius, 1, self )
-        if DYN_NPC_SQUADS and math.random( 0, 100 ) < 15 then
-            DYN_NPC_SQUADS.SaveReinforcePointAllNpcTeams( self:GetPos(), nil, 0 )
+        local creator = self:GetCreator()
+        if not IsValid( creator ) or not creator:IsFlagSet( FL_NOTARGET ) then
+            sound.EmitHint( SOUND_COMBAT, self:GetPos(), radius, 1, self )
+            if DYN_NPC_SQUADS and math.random( 0, 100 ) < 10 then
+                DYN_NPC_SQUADS.SaveReinforcePointAllNpcTeams( self:GetPos(), nil, 0 )
 
+            end
         end
     end
 
@@ -103,7 +115,7 @@ end
 
 local nextRecieve = 0
 
-net.Receive( "PlayExquisiteRadio", function()
+net.Receive( "PlayExquisiteRadio", function( _, ply )
     if nextRecieve > CurTime() then return end
     nextRecieve = CurTime() + 0.005
 
@@ -112,6 +124,8 @@ net.Receive( "PlayExquisiteRadio", function()
     songIndex = math.Round( songIndex )
 
     if not IsValid( selfEnt ) then nextRecieve = CurTime() + 0.1 return end
+
+    if selfEnt:GetCreatorOnly() and IsValid( selfEnt:GetCreator() ) and ply ~= selfEnt:GetCreator() then return end
 
     selfEnt.ActiveSong = math.Round( songIndex )
     selfEnt:RestartOurSong()
@@ -170,6 +184,8 @@ function ENT:PhysicsCollide( data )
     if self.nextTakeDamageTime > CurTime() then return end
     self.nextTakeDamageTime = CurTime() + 1
 
+    if self:GetUnbreakable() then return end
+
     self:TakeDamageRandomizeSong( true )
 
 end
@@ -179,6 +195,8 @@ function ENT:OnTakeDamage( dmg )
 
     if self.nextTakeDamageTime > CurTime() then return end
     self.nextTakeDamageTime = CurTime() + 0.1
+
+    if self:GetUnbreakable() then return end
 
     self:TakeDamageRandomizeSong( true )
 

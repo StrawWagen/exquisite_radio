@@ -12,9 +12,13 @@ ENT.Purpose = "Play some EXQUISITE music."
 ENT.Instructions = "Press E to play music."
 ENT.Category = "Fun + Games"
 ENT.Spawnable = true
+ENT.Editable    = true
 
 function ENT:SetupDataTables()
-    self:NetworkVar( "Int", 0, "Channel" )
+    local i = 1
+    self:NetworkVar( "Int", "Channel" )
+    self:NetworkVar( "Bool", "Unbreakable", { KeyName = "unbreakable", Edit = { order = i + 1, type = "Bool" } } )
+    self:NetworkVar( "Bool", "CreatorOnly", { KeyName = "creatoronly", Edit = { order = i + 1, type = "Bool", title = "Only changable by it's owner?" } } )
 
 end
 

@@ -198,7 +198,7 @@ local textDrawCutoff = 1000^2
 function ENT:DrawTextAboveMe( text, scaleMul ) -- twolemons cfc spawnpoint pr
     local myPos = self:GetPos()
     if EyePos():DistToSqr( myPos ) > textDrawCutoff then dontDrawText = CurTime() + 1 return end
-    local pos = myPos + upOff
+    local pos = self:LocalToWorld( upOff )
     local ang = ( pos - EyePos() ):Angle()
 
     ang[1] = 0
@@ -258,6 +258,9 @@ net.Receive( "OpenExquisiteRadioMenu", function()
 
     end
 
+    local justAskForContent = net.ReadBool()
+    if justAskForContent then return end
+
     local selfEnt = Entity( net.ReadUInt( 16 ) )
     local activeSong = net.ReadUInt( 16 )
 
@@ -277,6 +280,7 @@ net.Receive( "OpenExquisiteRadioMenu", function()
 
     function Tuner:Paint( w, h )
         draw.RoundedBox( 0, 0, 0, w, h, shopItemColor )
+
     end
 
     easyClosePanel( Tuner )
