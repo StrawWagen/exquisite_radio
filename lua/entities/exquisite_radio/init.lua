@@ -168,7 +168,7 @@ function ENT:DoNextSong()
     timer.Remove( timerName )
     if self.ActiveSong <= 1 then return end
 
-    local activePath = self.Songs[self.ActiveSong]
+    local activePath = self.Songs[self.ActiveSong].song
     local duration = SoundDuration( activePath )
     timer.Create( timerName, duration + 1, 1, function()
         if not IsValid( self ) then return end

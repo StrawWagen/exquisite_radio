@@ -24,21 +24,26 @@ function ENT:SetupDataTables()
 end
 
 ENT.Songs = {
-    [0] = "ambient/_period.wav", -- no song
-    [1] = "exquisite/exquisite1.mp3", -- Clair de lune - Claude Debussy
-    [2] = "exquisite/exquisite2.mp3", -- Unaccompanied Cello Suite No. 1 in G major, BWV 1007: I. Prélude
-    [3] = "exquisite/exquisite3.mp3", -- Chopin_Nocturne_op.9_No.2
-    [4] = "exquisite/exquisite4.mp3", -- Moonlight Sonata
-    [5] = "exquisite/exquisite5.mp3", -- Symphony No. 5 - Beethoven
-    [6] = "exquisite/exquisite6.mp3", -- Funeral March (by Chopin) - Chopin
-    [7] = "exquisite/exquisite7.mp3", -- Morning Mood (by Grieg) - Grieg
-    [8] = "exquisite/exquisite8.mp3", -- In The Hall Of The Mountain King (by Grieg) - Grieg
-    [9] = "exquisite/exquisite9.mp3", -- Pachabelly - Huma-Huma
-    [10] = "exquisite/exquisite10.mp3", -- Ride of the Valkyries - Wagner
-    [11] = "exquisite/exquisite11.mp3", -- From Russia With Love - Huma-Huma
-    [12] = "exquisite/exquisite12.mp3", -- Messiah - Handel
-    [13] = "exquisite/exquisite13.mp3", -- Midsummer Night's Dream - Mendelssohn
-    [14] = "exquisite/exquisite14.mp3", -- Serenade D957 No.4 - Schubert
-    [15] = "exquisite/exquisite15.mp3", -- Prelude Op. 28 no. 15 - Chopin
+    [0] = { song = "ambient/_period.wav", name = "Off" }, -- no song
+    [1] = { song = "exquisite/exquisite1.mp3", name = "Clair de lune - Claude Debussy" },
+    [2] = { song = "exquisite/exquisite2.mp3", name = "Unaccompanied Cello Suite No. 1 in G major, BWV 1007: I. Prélude" },
+    [3] = { song = "exquisite/exquisite3.mp3", name = "Chopin_Nocturne_op.9_No.2" },
+    [4] = { song = "exquisite/exquisite4.mp3", name = "Moonlight Sonata" },
+    [5] = { song = "exquisite/exquisite5.mp3", name = "Symphony No. 5 - Beethoven" },
+    [6] = { song = "exquisite/exquisite6.mp3", name = "Funeral March - Chopin" },
+    [7] = { song = "exquisite/exquisite7.mp3", name = "Morning Mood - Grieg" },
+    [8] = { song = "exquisite/exquisite8.mp3", name = "In The Hall Of The Mountain King - Grieg" },
+    [9] = { song = "exquisite/exquisite9.mp3", name = "Pachabelly - Huma-Huma" },
+    [10] = { song = "exquisite/exquisite10.mp3", name = "Ride of the Valkyries - Wagner" },
+    [11] = { song = "exquisite/exquisite11.mp3", name = "From Russia With Love - Huma-Huma" },
+    [12] = { song = "exquisite/exquisite12.mp3", name = "Messiah - Handel" },
+    [13] = { song = "exquisite/exquisite13.mp3", name = "Midsummer Night's Dream - Mendelssohn" },
+    [14] = { song = "exquisite/exquisite14.mp3", name = "Serenade D957 No.4 - Schubert" },
+    [15] = { song = "exquisite/exquisite15.mp3", name = "Prelude Op. 28 no. 15 - Chopin" },
+    [15] = { song = "exquisite/exquisite16.mp3", name = "Hungarian Dance No. 5 - Johannes Brahms" },
 
 }
+
+--[[
+    [] = { song = "", name = "" },
+--]]

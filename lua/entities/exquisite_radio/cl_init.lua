@@ -8,26 +8,6 @@ function ENT:Draw()
     self:DrawModel()
 end
 
-local SongNames = {
-    [0] = "Off",
-    [1] = "Clair de lune - Claude Debussy",
-    [2] = "Unaccompanied Cello Suite No. 1 in G major, BWV 1007: I. Prélude",
-    [3] = "Chopin_Nocturne_op.9_No.2",
-    [4] = "Moonlight Sonata - Beethoven",
-    [5] = "Symphony No. 5 - Beethoven",
-    [6] = "Funeral March - Chopin",
-    [7] = "Morning Mood - Grieg",
-    [8] = "In The Hall Of The Mountain King - Grieg",
-    [9] = "Pachabelly - Huma-Huma",
-    [10] = "Ride of the Valkyries - Wagner",
-    [11] = "From Russia With Love - Huma-Huma",
-    [12] = "Messiah - Handel",
-    [13] = "Midsummer Night's Dream - Mendelssohn",
-    [14] = "Serenade D957 No.4 - Schubert",
-    [15] = "Prelude Op. 28 no. 15 - Chopin",
-
-}
-
 local uiScaleVert = ScrH() / 1080
 local uiScaleHoris = ScrW() / 1920
 
@@ -220,7 +200,7 @@ function ENT:Draw()
         local songInd = self.exquisite_CurrentSongInd or 0
         if songInd <= 0 then dontDrawText = CurTime() + 0.25 return end
         if not self:GetShowSongName() then dontDrawText = CurTime() + 0.25 return end
-        self:DrawTextAboveMe( SongNames[songInd], 0.5 )
+        self:DrawTextAboveMe( self.Songs[songInd].name, 0.5 )
         return
 
     end
@@ -266,6 +246,8 @@ net.Receive( "OpenExquisiteRadioMenu", function()
     local selfEnt = Entity( net.ReadUInt( 16 ) )
     local activeSong = net.ReadUInt( 16 )
 
+    local songTbl = selfEnt.Songs
+
     if Tuner and IsValid( Tuner ) then
         Tuner:Close()
 
@@ -292,12 +274,12 @@ net.Receive( "OpenExquisiteRadioMenu", function()
     SongSlider:DockMargin( margin, margin, margin, margin )
     SongSlider:Dock( FILL )
     SongSlider:SetMin( 0 )
-    SongSlider:SetMax( table.Count( SongNames ) + -1 )
+    SongSlider:SetMax( table.Count( songTbl ) + -1 )
     SongSlider:SetDecimals( 0 )
     SongSlider:SetValue( activeSong )
-    SongSlider:SetText( "▶ " .. SongNames[math.Round( activeSong )] )
+    SongSlider:SetText( "▶ " .. songTbl[math.Round( activeSong )].name )
     SongSlider.OnValueChanged = function( _, val )
-        SongSlider:SetText( "▶ " .. SongNames[math.Round( val )] )
+        SongSlider:SetText( "▶ " .. songTbl[math.Round( val )].name )
         net.Start( "PlayExquisiteRadio" )
             net.WriteEntity( selfEnt )
             net.WriteUInt( math.Round( val ), 16 )
@@ -323,7 +305,7 @@ net.Receive( "ExquisiteRadioPlaySong", function()
     local lvlMul = 0.75 + ( volume * 0.25 ) -- decrease the lvl, but not to 0
     lvl = lvl * lvlMul
 
-    radio:EmitSound( radio.Songs[songInd], lvl, pitch, volume, CHAN_ITEM, SND_NOFLAGS, dsp )
+    radio:EmitSound( radio.Songs[songInd].song, lvl, pitch, volume, CHAN_ITEM, SND_NOFLAGS, dsp )
     radio.exquisite_CurrentSongInd = songInd
 
 end )
@@ -331,6 +313,6 @@ end )
 function ENT:OnRemove( fullUpdate ) -- stop song when removed
     if fullUpdate then return end
 
-    self:EmitSound( self.Songs[0], 100, 100, 1, CHAN_ITEM )
+    self:EmitSound( self.Songs[0].song, 100, 100, 1, CHAN_ITEM )
 
 end
