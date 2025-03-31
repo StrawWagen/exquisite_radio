@@ -23,7 +23,8 @@ local SongNames = {
     [11] = "From Russia With Love - Huma-Huma",
     [12] = "Messiah - Handel",
     [13] = "Midsummer Night's Dream - Mendelssohn",
-    [14] = "Serenade D957 No.4 - Schubert"
+    [14] = "Serenade D957 No.4 - Schubert",
+    [15] = "Prelude Op. 28 no. 15 - Chopin",
 
 }
 
@@ -217,7 +218,8 @@ function ENT:Draw()
     if knowsDisabled then return end
     if gotSongs then
         local songInd = self.exquisite_CurrentSongInd or 0
-        if songInd <= 0 then return end
+        if songInd <= 0 then dontDrawText = CurTime() + 0.25 return end
+        if not self:GetShowSongName() then dontDrawText = CurTime() + 0.25 return end
         self:DrawTextAboveMe( SongNames[songInd], 0.5 )
         return
 

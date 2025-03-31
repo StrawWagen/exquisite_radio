@@ -19,6 +19,7 @@ function ENT:SetupDataTables()
     self:NetworkVar( "Int", "Channel" )
     self:NetworkVar( "Bool", "Unbreakable", { KeyName = "unbreakable", Edit = { order = i + 1, type = "Bool" } } )
     self:NetworkVar( "Bool", "CreatorOnly", { KeyName = "creatoronly", Edit = { order = i + 1, type = "Bool", title = "Only changable by it's owner?" } } )
+    self:NetworkVar( "Bool", "ShowSongName", { KeyName = "showsongname", Edit = { order = i + 1, type = "Bool", title = "Show current song name?" } } )
 
 end
 
@@ -38,5 +39,6 @@ ENT.Songs = {
     [12] = "exquisite/exquisite12.mp3", -- Messiah - Handel
     [13] = "exquisite/exquisite13.mp3", -- Midsummer Night's Dream - Mendelssohn
     [14] = "exquisite/exquisite14.mp3", -- Serenade D957 No.4 - Schubert
+    [15] = "exquisite/exquisite15.mp3", -- Prelude Op. 28 no. 15 - Chopin
 
 }
