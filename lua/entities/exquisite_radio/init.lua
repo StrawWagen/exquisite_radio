@@ -100,8 +100,8 @@ function ENT:RestartOurSong()
 
     end
 
-    local filterAllPlayers = RecipientFilter()
-    filterAllPlayers:AddAllPlayers()
+    local filterPAS = RecipientFilter()
+    filterPAS:AddPAS( self:GetPos() )
 
     net.Start( "ExquisiteRadioPlaySong" )
         net.WriteEntity( self )
@@ -109,7 +109,7 @@ function ENT:RestartOurSong()
         net.WriteInt( lvl, 8 )
         net.WriteInt( self.audioPitch, 8 )
         net.WriteInt( self.audioDSP, 8 )
-    net.Send( filterAllPlayers )
+    net.Send( filterPAS )
 
 end
 

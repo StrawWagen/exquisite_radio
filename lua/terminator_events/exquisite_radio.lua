@@ -1,6 +1,6 @@
 
 local newEvent = {
-    defaultPercentChancePerMin = 0.0005,
+    defaultPercentChancePerMin = 0.005,
 
     navmeshEvent = true,
     variants = {
