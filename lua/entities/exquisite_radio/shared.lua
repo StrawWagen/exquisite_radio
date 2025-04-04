@@ -40,7 +40,9 @@ ENT.Songs = {
     [13] = { song = "exquisite/exquisite13.mp3", name = "Midsummer Night's Dream - Mendelssohn" },
     [14] = { song = "exquisite/exquisite14.mp3", name = "Serenade D957 No.4 - Schubert" },
     [15] = { song = "exquisite/exquisite15.mp3", name = "Prelude Op. 28 no. 15 - Chopin" },
-    [15] = { song = "exquisite/exquisite16.mp3", name = "Hungarian Dance No. 5 - Johannes Brahms" },
+    [16] = { song = "exquisite/exquisite16.mp3", name = "Hungarian Dance No. 5 - Johannes Brahms" },
+    [17] = { song = "exquisite/exquisite17.mp3", name = "Ave Maria - Schubert" },
+    [18] = { song = "exquisite/exquisite18.mp3", name = "Entrance of the Gladiators - Julius Fučík" },
 
 }
 
